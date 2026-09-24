@@ -31,6 +31,7 @@ export default function App() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [filters, setFilters] = useState({ country: '', department: '', role: '', search: '' });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const countries = useMemo(
     () => Array.from(new Set(employees.map((employee) => employee.country))).sort(),
@@ -48,23 +49,37 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (filters.country) params.set('country', filters.country);
-      if (filters.department) params.set('department', filters.department);
-      if (filters.role) params.set('role', filters.role);
-      if (filters.search) params.set('search', filters.search);
+      setError(null);
 
-      const [employeesRes, summaryRes] = await Promise.all([
-        fetch(`${API_URL}/employees?${params.toString()}`),
-        fetch(`${API_URL}/salary-summary`),
-      ]);
+      try {
+        const params = new URLSearchParams();
+        if (filters.country) params.set('country', filters.country);
+        if (filters.department) params.set('department', filters.department);
+        if (filters.role) params.set('role', filters.role);
+        if (filters.search) params.set('search', filters.search);
 
-      const employeeData = await employeesRes.json();
-      const summaryData = await summaryRes.json();
+        const [employeesRes, summaryRes] = await Promise.all([
+          fetch(`${API_URL}/employees?${params.toString()}`),
+          fetch(`${API_URL}/salary-summary`),
+        ]);
 
-      setEmployees(employeeData.employees || []);
-      setSummary(summaryData || null);
-      setLoading(false);
+        if (!employeesRes.ok || !summaryRes.ok) {
+          throw new Error('Failed to load employee data from the backend.');
+        }
+
+        const employeeData = await employeesRes.json();
+        const summaryData = await summaryRes.json();
+
+        setEmployees(employeeData.employees || []);
+        setSummary(summaryData || null);
+      } catch (fetchError) {
+        console.error(fetchError);
+        setError('Unable to connect to the backend service. Please check the Render deployment and the VITE_API_URL value.');
+        setEmployees([]);
+        setSummary(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -105,6 +120,13 @@ export default function App() {
           ))}
         </select>
       </section>
+
+      {error && (
+        <section className="panel" style={{ marginBottom: '1rem' }}>
+          <h2>Connection Error</h2>
+          <p>{error}</p>
+        </section>
+      )}
 
       {summary && (
         <section className="stats-grid">
