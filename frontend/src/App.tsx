@@ -20,7 +20,7 @@ type Summary = {
   byDepartment: Array<{ department: string; totalEmployees: number; totalPayroll: number; averageSalary: number }>;
 };
 
-const API_URL = 'http://localhost:5001/api';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api`;
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
