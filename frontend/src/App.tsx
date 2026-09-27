@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
 type Employee = {
   id: number;
@@ -16,34 +16,58 @@ type Summary = {
   averageSalary: number;
   highestSalary: number;
   lowestSalary: number;
-  byCountry: Array<{ country: string; totalEmployees: number; totalPayroll: number; averageSalary: number }>;
-  byDepartment: Array<{ department: string; totalEmployees: number; totalPayroll: number; averageSalary: number }>;
+  byCountry: Array<{
+    country: string;
+    totalEmployees: number;
+    totalPayroll: number;
+    averageSalary: number;
+  }>;
+  byDepartment: Array<{
+    department: string;
+    totalEmployees: number;
+    totalPayroll: number;
+    averageSalary: number;
+  }>;
 };
 
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api`;
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`;
 
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
 export default function App() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
-  const [filters, setFilters] = useState({ country: '', department: '', role: '', search: '' });
+  const [filters, setFilters] = useState({
+    country: "",
+    department: "",
+    role: "",
+    search: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const countries = useMemo(
-    () => Array.from(new Set(employees.map((employee) => employee.country))).sort(),
-    [employees]
+    () =>
+      Array.from(new Set(employees.map((employee) => employee.country))).sort(),
+    [employees],
   );
   const departments = useMemo(
-    () => Array.from(new Set(employees.map((employee) => employee.department))).sort(),
-    [employees]
+    () =>
+      Array.from(
+        new Set(employees.map((employee) => employee.department)),
+      ).sort(),
+    [employees],
   );
   const roles = useMemo(
-    () => Array.from(new Set(employees.map((employee) => employee.role))).sort(),
-    [employees]
+    () =>
+      Array.from(new Set(employees.map((employee) => employee.role))).sort(),
+    [employees],
   );
 
   useEffect(() => {
@@ -53,10 +77,10 @@ export default function App() {
 
       try {
         const params = new URLSearchParams();
-        if (filters.country) params.set('country', filters.country);
-        if (filters.department) params.set('department', filters.department);
-        if (filters.role) params.set('role', filters.role);
-        if (filters.search) params.set('search', filters.search);
+        if (filters.country) params.set("country", filters.country);
+        if (filters.department) params.set("department", filters.department);
+        if (filters.role) params.set("role", filters.role);
+        if (filters.search) params.set("search", filters.search);
 
         const [employeesRes, summaryRes] = await Promise.all([
           fetch(`${API_URL}/employees?${params.toString()}`),
@@ -64,7 +88,7 @@ export default function App() {
         ]);
 
         if (!employeesRes.ok || !summaryRes.ok) {
-          throw new Error('Failed to load employee data from the backend.');
+          throw new Error("Failed to load employee data from the backend.");
         }
 
         const employeeData = await employeesRes.json();
@@ -74,7 +98,9 @@ export default function App() {
         setSummary(summaryData || null);
       } catch (fetchError) {
         console.error(fetchError);
-        setError('Unable to connect to the backend service. Please check the Render deployment and the VITE_API_URL value.');
+        setError(
+          "Unable to connect to the backend service. Please check the Render deployment and the VITE_API_URL value.",
+        );
         setEmployees([]);
         setSummary(null);
       } finally {
@@ -99,30 +125,53 @@ export default function App() {
           type="text"
           placeholder="Search employee or email"
           value={filters.search}
-          onChange={(event) => setFilters((prev) => ({ ...prev, search: event.target.value }))}
+          onChange={(event) =>
+            setFilters((prev) => ({ ...prev, search: event.target.value }))
+          }
         />
-        <select value={filters.country} onChange={(event) => setFilters((prev) => ({ ...prev, country: event.target.value }))}>
+        <select
+          value={filters.country}
+          onChange={(event) =>
+            setFilters((prev) => ({ ...prev, country: event.target.value }))
+          }
+        >
           <option value="">All countries</option>
           {countries.map((country) => (
-            <option key={country} value={country}>{country}</option>
+            <option key={country} value={country}>
+              {country}
+            </option>
           ))}
         </select>
-        <select value={filters.department} onChange={(event) => setFilters((prev) => ({ ...prev, department: event.target.value }))}>
+        <select
+          value={filters.department}
+          onChange={(event) =>
+            setFilters((prev) => ({ ...prev, department: event.target.value }))
+          }
+        >
           <option value="">All departments</option>
           {departments.map((department) => (
-            <option key={department} value={department}>{department}</option>
+            <option key={department} value={department}>
+              {department}
+            </option>
           ))}
         </select>
-        <select value={filters.role} onChange={(event) => setFilters((prev) => ({ ...prev, role: event.target.value }))}>
+        <select
+          value={filters.role}
+          onChange={(event) =>
+            setFilters((prev) => ({ ...prev, role: event.target.value }))
+          }
+        >
           <option value="">All roles</option>
           {roles.map((role) => (
-            <option key={role} value={role}>{role}</option>
+            <option key={role} value={role}>
+              {role}
+            </option>
           ))}
         </select>
       </section>
 
       {error && (
-        <section className="panel" style={{ marginBottom: '1rem' }}>
+        <section className="panel" style={{ marginBottom: "1rem" }}>
           <h2>Connection Error</h2>
           <p>{error}</p>
         </section>

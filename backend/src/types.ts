@@ -15,6 +15,16 @@ export type SalarySummary = {
   averageSalary: number;
   highestSalary: number;
   lowestSalary: number;
-  byCountry: Array<{ country: string; totalEmployees: number; totalPayroll: number; averageSalary: number }>;
-  byDepartment: Array<{ department: string; totalEmployees: number; totalPayroll: number; averageSalary: number }>;
+  byCountry: Array<{
+    country: string;
+    totalEmployees: number;
+    totalPayroll: number;
+    averageSalary: number;
+  }>;
+  byDepartment: Array<{
+    department: string;
+    totalEmployees: number;
+    totalPayroll: number;
+    averageSalary: number;
+  }>;
 };

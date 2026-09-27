@@ -1,8 +1,30 @@
-import { db, initDb } from './db.js';
+import { db, initDb } from "./db.js";
 
-const countries = ['India', 'USA', 'UK', 'Germany', 'Canada', 'Australia', 'Singapore'];
-const departments = ['Engineering', 'HR', 'Finance', 'Sales', 'Marketing', 'Operations'];
-const roles = ['Software Engineer', 'Senior Engineer', 'Manager', 'Analyst', 'Associate', 'Director'];
+const countries = [
+  "India",
+  "USA",
+  "UK",
+  "Germany",
+  "Canada",
+  "Australia",
+  "Singapore",
+];
+const departments = [
+  "Engineering",
+  "HR",
+  "Finance",
+  "Sales",
+  "Marketing",
+  "Operations",
+];
+const roles = [
+  "Software Engineer",
+  "Senior Engineer",
+  "Manager",
+  "Analyst",
+  "Associate",
+  "Director",
+];
 
 function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -11,7 +33,9 @@ function randomBetween(min: number, max: number) {
 export function seedEmployees(count = 10000) {
   initDb();
 
-  const existingCount = db.prepare('SELECT COUNT(*) as total FROM employees').get() as { total: number };
+  const existingCount = db
+    .prepare("SELECT COUNT(*) as total FROM employees")
+    .get() as { total: number };
   if (existingCount.total > 0) {
     return { inserted: 0, total: existingCount.total };
   }
@@ -29,7 +53,11 @@ export function seedEmployees(count = 10000) {
       const name = `Employee ${i}`;
       const email = `employee${i}@acme.com`;
       const salary = randomBetween(35000, 220000);
-      const joiningDate = new Date(2018 + (i % 7), (i % 12), (i % 28) + 1).toISOString();
+      const joiningDate = new Date(
+        2018 + (i % 7),
+        i % 12,
+        (i % 28) + 1,
+      ).toISOString();
       insert.run(name, email, country, department, role, salary, joiningDate);
     }
   });
